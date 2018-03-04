@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>微博可视分析系列</title>
+
+    <!-- Bootstrap -->
+    <link href="../res/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+
+        body {
+            padding-top: 70px;
+        }
+    </style>
+
+    <!-- HTML5 shim and ../res/pond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: ../res/pond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/../res/pond.js/1.4.2/../res/pond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index.html">Weibo Analysis </a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href=".">首页</a></li>
+                <li class=""><a href="../manual.html">教程</a></li>
+                <li class=""><a href="../publications.html">数据分析</a></li>
+
+                <li class=""><a href="../people.html">项目团队</a></li>
+                <li class=""><a href="../platform.html">Weibo Platform</a></li>
+                <li class=""><a href="../copyright.html">版权</a></li>
+                <!-- <li class=""><a href="intro/visearch">Visearch</a></li> -->
+                <!-- <li class=""><a href="intro/thememap">Thememap</a></li> -->
+                <!-- <li class=""><a href="intro/thememap2">Thememap2</a></li> -->
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-10">
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="height:1000px"></div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <ul class="nav nav-pills nav-stacked" id="3">
+                <li role="presentation"><button  class="disabled btn">赌场相关的兴趣点</button></li>
+            </ul>
+
+        </div>
+
+    </div>
+    <hr/>
+
+    <div class="row text-center">
+        <p>
+
+
+        </p>
+        <p>
+            <small>Copyright 2015-2018, GuangDong University of Technology, All rights reserved.</small>
+        </p>
+    </div>
+
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="../res/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="../res/js/bootstrap.min.js"></script>
+
+
+<script src="../../build/jquery.min.js"></script>
+<!-- ECharts单文件引入 -->
+<script src="../../build/dist/echarts.js"></script>
+
+<!-- data 数据文件引入 -->
+<script src="../data/poi2poi.js"></script>
+
+
+<script type="text/javascript">
+
+    show(0);
+    $(function () {
+        for (i in gambling_name) {
+            $("#3").append('<li role="presentation"><a href="#" name="1' + i + '">' + gambling_name[i] + '</a></li>')
+        }
+
+
+        $("a").click(function () {
+            var num = parseInt($(this).attr('name'));
+            show(num % 10);
+        })
+
+
+    });
+
+    function show(num) {
+
+
+
+
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: '../../build/dist'
+        }
+    });
+
+    // 使用
+    require(
+        [
+            'echarts',
+            'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+            'echarts/chart/line', // 使用折线图就加载line模块，按需加载
+            'echarts/chart/scatter',
+            'echarts/chart/k',
+            'echarts/chart/pie',
+            'echarts/chart/radar',
+            'echarts/chart/force',
+            'echarts/chart/chord',
+            'echarts/chart/gauge',
+            'echarts/chart/funnel',
+            'echarts/chart/eventRiver',
+            'echarts/chart/venn',
+            'echarts/chart/treemap',
+            'echarts/chart/tree',
+            'echarts/chart/map',
+            'echarts/chart/wordCloud',
+            'echarts/chart/heatmap'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('main'));
+
+            // 自定义扩展图表类型：mapType = HK
+            require('echarts/util/mapData/params').params.macau = {
+                getGeoJson: function (callback) {
+//                        $.getJSON('../build/geoJson/HK_geo.json', callback);
+                    $.getJSON('../../build/geoJson/macau2.json', callback);
+                }
+            };
+
+//                var mapGeoData = require('echarts/util/mapData/params');
+//                console.log(mapGeoData);
+
+            option = {
+                title : {
+                    text: 'POI 导向图',
+                    subtext: '数据来自weibo',
+                    x:'center',
+                    y:'bottom'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: '{a} : {b}'
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        restore : {show: true},
+                        magicType: {show: true, type: ['force', 'chord']},
+                        saveAsImage : {show: true}
+                    }
+                },
+                legend: {
+                    x: 'left',
+                    data:categarys[num]
+                },
+                series : [
+                    {
+                        type:'force',
+                        name : "POI 导向图",
+                        ribbonType: false,
+                        categories : [
+                            {
+                                name: '人物'
+                            },
+                            {
+                                name: '家人',
+                                symbol: 'diamond'
+                            },
+                            {
+                                name:'朋友'
+                            }
+                        ],
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#333'
+                                    }
+                                },
+                                nodeStyle : {
+                                    brushType : 'both',
+                                    borderColor : 'rgba(255,215,0,0.4)',
+                                    borderWidth : 1
+                                }
+                            },
+                            emphasis: {
+                                label: {
+                                    show: false
+                                    // textStyle: null      // 默认使用全局文本样式，详见TEXTSTYLE
+                                },
+                                nodeStyle : {
+                                    //r: 30
+                                },
+                                linkStyle : {}
+                            }
+                        },
+                        minRadius : 15,
+                        maxRadius : 25,
+                        gravity: 1.1,
+                        scaling: 1.2,
+                        draggable: false,
+                        linkSymbol: 'arrow',
+                        steps: 10,
+                        coolDown: 0.9,
+                        //preventOverlap: true,
+                        nodes:gambling_nodes[num],
+                        links : gamling_links[num]
+                    }
+                ]
+            };
+            var ecConfig = require('echarts/config');
+            function focus(param) {
+                var data = param.data;
+                var links = option.series[0].links;
+                var nodes = option.series[0].nodes;
+                if (
+                    data.source != null
+                    && data.target != null
+                ) { //点击的是边
+                    var sourceNode = nodes.filter(function (n) {return n.name == data.source})[0];
+                    var targetNode = nodes.filter(function (n) {return n.name == data.target})[0];
+                    console.log("选中了边 " + sourceNode.name + ' -> ' + targetNode.name + ' (' + data.weight + ')');
+                } else { // 点击的是点
+                    console.log("选中了" + data.name + '(' + data.value + ')');
+                }
+            }
+            myChart.on(ecConfig.EVENT.CLICK, focus)
+
+            myChart.on(ecConfig.EVENT.FORCE_LAYOUT_END, function () {
+                console.log(myChart.chart.force.getPosition());
+            });
+
+
+
+            // 为echarts对象加载数据
+            myChart.setOption(option);
+        }
+    );
+    }
+</script>
+</body>
+</html>
+
+
+

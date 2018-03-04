@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>微博可视分析系列</title>
+
+    <!-- Bootstrap -->
+    <link href="../res/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+
+        body {
+            padding-top: 70px;
+        }
+    </style>
+
+    <!-- HTML5 shim and ../res/pond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: ../res/pond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/../res/pond.js/1.4.2/../res/pond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index.html">Weibo Analysis </a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href=".">首页</a></li>
+                <li class=""><a href="../manual.html">教程</a></li>
+                <li class=""><a href="../publications.html">数据分析</a></li>
+
+                <li class=""><a href="../people.html">项目团队</a></li>
+                <li class=""><a href="../platform.html">Weibo Platform</a></li>
+                <li class=""><a href="../copyright.html">版权</a></li>
+                <!-- <li class=""><a href="intro/visearch">Visearch</a></li> -->
+                <!-- <li class=""><a href="intro/thememap">Thememap</a></li> -->
+                <!-- <li class=""><a href="intro/thememap2">Thememap2</a></li> -->
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+
+        <br><br><br><br>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="height:500px"></div>
+<br><br><br><br><br><br>
+<div id="main2" style="height:500px"></div>
+        </div>
+
+    </div>
+    <hr/>
+
+    <div class="row text-center">
+        <p>
+
+
+        </p>
+        <p>
+            <small>Copyright 2015-2018, GuangDong University of Technology, All rights reserved.</small>
+        </p>
+    </div>
+
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="../res/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="../res/js/bootstrap.min.js"></script>
+
+<!-- ECharts单文件引入 -->
+<script src="../../build/dist/echarts.js"></script>
+
+<!-- data 数据文件引入 -->
+<script src="../data/weibodata.js"></script>
+
+
+<script type="text/javascript">
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: '../../build/dist'
+        }
+    });
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+                'echarts/chart/line', // 使用折线图就加载line模块，按需加载
+                'echarts/chart/scatter',
+                'echarts/chart/k',
+                'echarts/chart/pie',
+                'echarts/chart/radar',
+                'echarts/chart/force',
+                'echarts/chart/chord',
+                'echarts/chart/gauge',
+                'echarts/chart/funnel',
+                'echarts/chart/eventRiver',
+                'echarts/chart/venn',
+                'echarts/chart/map',
+                'echarts/chart/treemap',
+                'echarts/chart/tree',
+                'echarts/chart/wordCloud',
+                'echarts/chart/heatmap'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('main'));
+                var myChart2 = ec.init(document.getElementById('main2'));
+
+                var option = {
+                    timeline: {
+                        data: yeardata,
+                        label: {
+                            formatter: function (s) {
+                                return s.slice(0, 4);
+                            }
+                        },
+                        autoPlay: true,
+                        playInterval: 1000
+                    },
+                    options: [
+                        {
+                            title: {
+                                x: 'center',
+                                'text': '2011 澳门 地区 微博 每月总数',
+                                'subtext': '数据来自 chen 爬取',
+                                textStyle: {
+                                    fontSize: 30
+                                }
+                            },
+                            tooltip: {'trigger': 'axis'},
+                            legend: {
+                                x: 'right',
+                                'data': ['mouth'],
+                                'selected': {
+                                    'mouth': true
+                                },
+                                textStyle: {
+                                    fontSize: 30
+                                }
+                            },
+                            toolbox: {
+                                'show': true,
+                                orient: 'vertical',
+                                x: 'right',
+                                y: 'center',
+                                'feature': {
+                                    'mark': {'show': true},
+                                    'dataView': {'show': true, 'readOnly': false},
+                                    'magicType': {'show': true, 'type': ['line', 'bar', 'stack', 'tiled']},
+                                    'restore': {'show': true},
+                                    'saveAsImage': {'show': true}
+                                }
+                            },
+                            calculable: true,
+                            grid: {'y': 80, 'y2': 100},
+                            xAxis: [{
+                                'type': 'category',
+                                'axisLabel': {'interval': 0},
+                                'data': monthdata
+                            }],
+                            yAxis: [
+                                {
+                                    'type': 'value',
+                                    'name': 'status（条数）',
+                                    'max': 19000
+                                },
+                                {
+                                    'type': 'value',
+                                    'name': '其他（亿元）'
+                                }
+                            ],
+                            series: [
+                                {
+                                    'name': '澳门 地区 微博 每月总数',
+                                    'type': 'bar',
+                                    'markLine': {
+                                        symbol: ['arrow', 'none'],
+                                        symbolSize: [4, 2],
+                                        itemStyle: {
+                                            normal: {
+                                                lineStyle: {color: 'orange'},
+                                                barBorderColor: 'orange',
+                                                label: {
+                                                    position: 'left',
+                                                    formatter: function (params) {
+                                                        return Math.round(params.value);
+                                                    },
+                                                    textStyle: {color: 'orange'}
+                                                }
+                                            }
+                                        },
+                                        'data': [{'type': 'average', 'name': '平均值'}]
+                                    },
+                                    'data': dataMap.status_num['2011']
+                                }
+                            ]
+                        },
+                        {
+                            title: {'text': '2012 澳门 地区 微博 每月总数'},
+                            series: [
+                                {'data': dataMap.status_num['2012']}
+                            ]
+                        },
+                        {
+                            title: {'text': '2013 澳门 地区 微博 每月总数'},
+                            series: [
+                                {'data': dataMap.status_num['2013']}
+                            ]
+                        },
+                        {
+                            title: {'text': '2014 澳门 地区 微博 每月总数'},
+                            series: [
+                                {'data': dataMap.status_num['2014']}
+                            ]
+                        },
+                        {
+                            title: {'text': '2015 澳门 地区 微博 每月总数'},
+                            series: [
+                                {'data': dataMap.status_num['2015']}
+                            ]
+                        },
+                        {
+                            title: {'text': '2016 澳门 地区 微博 每月总数'},
+                            series: [
+                                {'data': dataMap.status_num['2016']}
+                            ]
+                        }
+                    ]
+                };
+
+                var option2 = {
+                    title: {
+                        x: "center",
+                        'text': '澳门 地区 微博 每年的weibo总数',
+                        'subtext': '数据来自 chen 爬取',
+                        textStyle: {
+                            fontSize: 30
+                        }
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    legend: {
+                        x: "right",
+                        textStyle: {
+                            fontSize: 30
+                        },
+                        'data': ['year'],
+                        'selected': {
+                            'year': true
+                        }
+                    },
+                    toolbox: {
+                        'show': true,
+                        orient: 'vertical',
+                        x: 'right',
+                        y: 'center',
+                        'feature': {
+                            'mark': {'show': true},
+                            'dataView': {'show': true, 'readOnly': false},
+                            'magicType': {'show': true, 'type': ['line', 'bar', 'stack', 'tiled']},
+                            'restore': {'show': true},
+                            'saveAsImage': {'show': true}
+                        }
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: yeardata
+
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            'max': 120000
+                        }
+                    ],
+                    series: [
+                        {
+                            "name": "该年的weibo总数",
+                            "type": "bar",
+                            "data": status_yearsum_num
+
+                        }
+                    ]
+                };
+
+                // 为echarts对象加载数据
+                myChart.setOption(option);
+                myChart2.setOption(option2);
+            }
+    );
+
+</script>
+</body>
+</html>
+
+
+

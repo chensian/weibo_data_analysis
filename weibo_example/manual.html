@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>微博可视分析系列</title>
+
+    <!-- Bootstrap -->
+    <link href="res/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+
+        body { padding-top: 70px; }
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">WeiboVA</a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li class=""><a href=".">首页</a></li>
+                <li class="active"><a href="manual.html">教程</a></li>
+                <li class=""><a href="publications.html">数据分析</a></li>
+
+                <li class=""><a href="people.html">项目团队</a></li>
+                <li class=""><a href="platform.html">Weibo Platform</a></li>
+                <li class=""><a href="copyright.html">版权</a></li>
+                <!-- <li class=""><a href="intro/visearch">Visearch</a></li> -->
+                <!-- <li class=""><a href="intro/thememap">Thememap</a></li> -->
+                <!-- <li class=""><a href="intro/thememap2">Thememap2</a></li> -->
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-md-3" id="navbar-container">
+            <div id="navbar">
+                <ul class="nav nav-pills nav-stacked" id="navbar-items">
+                    <li><a href="#overview">介绍</a></li>
+                    <li><a href="#interface">操作详解</a></li>
+                    <li><a href="#cases">案例分析</a></li>
+                    <li><a href="#exportcsv">CSV 数据说明</a></li>
+                    <li><a href="#custom-chart">自定义图表</a></li>
+                </ul>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(window).resize(function() {
+                $("#navbar").css("width", $("#navbar-container").width() + "px");
+            });
+            $("#navbar").css("width", $("#navbar-container").width() + "px");
+        </script>
+
+        <!-- ================================================================ -->
+        <div class="col-md-9">
+            <div id="overview" class="m-anchor">
+
+                <h1>介绍</h1><hr />
+
+                <p>北京大学 PKUVIS 微博可视分析工具 (WeiboEvents) 是北京大学可视化与可视分析研究组开发的微博传播分析工具。它通过直观的视图清晰地呈现出一个事件中微博转发的过程，让您能够迅速地发现事件中的关键人物、关键微博、重要观点，同时通过可视化的方式帮助您更好地分析新浪微博中事件的发生与发展过程。</p>
+                <p>您可以与这个神奇的页面进行交互，不仅可以看到故事发展的全貌，还可以像一个真正的侦探一样发掘出故事背后的秘密。</p>
+            </div>
+
+            <div id="interface" class="m-anchor">
+                <h1>操作详解</h1><hr />
+
+                <h2>主界面</h2>
+                <p>下图是本工具的主界面。</p>
+                <p><img src="tool-overview.jpg" class="img-responsive" /></p>
+                <ul>
+                    <li><b>微博传播视图</b>: 每个节点代表一条微博，连线代表转发关系，可视化展示微博传播的过程。</li>
+                    <li><b>工具栏</b>: 一些常用的功能，如切换视图、缩放等。</li>
+                    <li><b>时间线</b>: 显示单位时间微博的数量。</li>
+                    <li><b>面板</b>: 包括详细的视图参数、微博过滤器、关键词以及统计图表、用户列表等。</li>
+                </ul>
+
+                <h2>视图模式</h2>
+                <p>微博传播视图中有帆状视图、树状视图和圆环视图三种模式，可以在工具栏中通过<i class="xicon-tools-sail"></i>, <i class="xicon-tools-tree"></i>, <i class="xicon-tools-circular"></i>按钮切换。</p>
+                <p><img src="layouts.jpg" class="img-responsive" /></p>
+                <ul>
+                    <li><b><i class="xicon-tools-sail"></i> 帆状视图</b>:
+                        横轴为时间，纵轴为转发关系。
+                    </li>
+                    <li><b><i class="xicon-tools-tree"></i> 树状视图</b>:
+                        传统的树形结构，仅显示转发关系。
+                    </li>
+                    <li><b><i class="xicon-tools-circular"></i> 圆环视图</b>:
+                        可交互的圆环形视图，每个圆环中心为重要节点，周围是该节点的转发。圆环之间连线表示重要节点间的转发关系。
+                    </li>
+                </ul>
+
+                <h2>视图的移动与缩放</h2>
+                <p>通过<i class="xicon-tools-zooming"></i>, <i class="xicon-tools-move"></i>, <i class="xicon-tools-zoom-in"></i>, <i class="xicon-tools-zoom-out"></i>, <i class="xicon-tools-undo"></i>, <i class="xicon-tools-reset"></i>工具配合视图上的光标操作可以调整视图位置与大小。</p>
+                <ul>
+                    <li><b><i class="xicon-tools-zooming"></i> 缩放</b>:
+                        选中后，可以在视图中拖动光标，选中区域并放大。
+                    </li>
+                    <li><b><i class="xicon-tools-move"></i> 移动</b>:
+                        选中后，可以在视图中拖动光标，平移视图。
+                    </li>
+                    <li><b><i class="xicon-tools-zoom-in"></i> 放大、<i class="xicon-tools-zoom-out"></i> 缩小</b>:
+                        放大/缩小视图。
+                    </li>
+                    <li><b><i class="xicon-tools-undo"></i> 撤销</b>:
+                        回到上一个视图。
+                    </li>
+                    <li><b><i class="xicon-tools-reset"></i> 复位</b>:
+                        回复默认视图。
+                    </li>
+                </ul>
+
+            </div>
+
+            <!-- ================================================================ -->
+            <div id="cases" class="m-anchor">
+                <h1>案例分析</h1><hr />
+                <p>早期的案例分析：</p>
+                <ul>
+                    <li><a href="http://www.vizinsight.com/2012/03/pkuvis%E5%BE%AE%E5%8D%9A%E5%8F%AF%E8%A7%86%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E7%9A%84%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/">视物致知: PKUVIS 微博可视分析工具的案例分析 (2013.03)</a></li>
+                    <li><a href="http://blog.renren.com/blog/230471237/907277554">人人网网友: 微博谣言是如何传播的 - 揭秘病毒式传播的奥妙 (2013.06)</a></li>
+                </ul>
+            </div>
+
+            <!-- ================================================================ -->
+            <div id="exportcsv" class="m-anchor">
+                <h1>CSV 数据说明</h1><hr />
+
+                <p>下载到的数据为 UTF-8 编码的 CSV 格式，Microsoft Excel 即可打开。</p>
+                <table class="table table-striped">
+                    <thead>
+                    <tr><th>字段名称</th><th>说明</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>id</td><td>微博的 ID</td></tr>
+                    <tr><td>mid</td><td>微博的 MID</td></tr>
+                    <tr><td>uid</td><td>微博作者的 UID</td></tr>
+                    <tr><td>parent</td><td>该条微博直接转发微博的 MID</td></tr>
+                    <tr><td>type</td><td>微博的类型，暂无用处</td></tr>
+                    <tr><td>t</td><td>微博发布时间，<a href="http://en.wikipedia.org/wiki/Unix_time">Unix Timestamp</a>，即自 1970 年 1 月 1 日 00:00:00 UTC 时间以来的秒数</td></tr>
+                    <tr><td>comments_count</td><td>微博的评论数</td></tr>
+                    <tr><td>reposts_count</td><td>微博的转发数，这个转发数是新浪给出的，可能和抓取到的数据中转发数有所不同</td></tr>
+                    <tr><td>user_created_at</td><td>微博作者创建时间，<a href="http://en.wikipedia.org/wiki/Unix_time">Unix Timestamp</a></td></tr>
+                    <tr><td>followers_count</td><td>微博作者的粉丝数</td></tr>
+                    <tr><td>statuses_count</td><td>微博作者的微博数</td></tr>
+                    <tr><td>friends_count</td><td>微博作者的关注数</td></tr>
+                    <tr><td>username</td><td>微博作者的用户名</td></tr>
+                    <tr><td>user_description</td><td>微博作者的用户描述</td></tr>
+                    <tr><td>city</td><td>微博作者的城市编号，具体请查阅<a href="http://open.weibo.com/wiki/%E7%9C%81%E4%BB%BD%E5%9F%8E%E5%B8%82%E7%BC%96%E7%A0%81%E8%A1%A8">新浪 API 文档</a></td></tr>
+                    <tr><td>province</td><td>微博作者的省份编号</td></tr>
+                    <tr><td>gender</td><td>微博作者的性别，m 为男，f 为女，n 为未知</td></tr>
+                    <tr><td>verified</td><td>微博作者是否已加 V</td></tr>
+                    <tr><td>verified_reason</td><td>微博作者加 V 原因</td></tr>
+                    <tr><td>verified_type</td><td>微博作者加 V 类型</td></tr>
+                    <tr><td>original_text</td><td>微博原始文本</td></tr>
+                    <tr><td>text</td><td>作者本人文本（去掉第一个 //@ 后面的内容）</td></tr>
+                    <tr><td>words</td><td>分词结果，暂为空</td></tr>
+                    <tr><td>emotion</td><td>情感值，暂为空</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ================================================================ -->
+            <div id="custom-chart" class="m-anchor">
+                <h1>自定义图表</h1><hr />
+                <p>WeiboEvents 提供一个自定义图表的功能，您可以用自己的算法计算统计量，然后用可视化或文本呈现。</p>
+                <p>目前我们支持的图表有直方图，更多图表类型将随后加入。</p>
+                <p>要使用这个功能，您需要输入一段 Javascript 代码，像下面这样:</p>
+                <pre class="syntax-highlight language-javascript">
+function(fx, tweets) {
+  // 这里可以写一段 Javascript 代码，用自定义的算法计算统计信息然后绘图。
+  // fx 中包括一些常用函数，如 fx.min, fx.max 等。
+  // tweets 是所有微博构成的数组。
+
+  // 在这里编写代码，实现您的算法，生成图表或文本信息。
+  // fx.print(text): 输出文本
+  // fx.draw(graph): 绘制图表
+}
+// 注意: 不要添加多余的变量或函数，一切应在上面的函数中完成。
+</pre>
+                <h2>示例代码</h2>
+                <p>分别计算本事件中男、女、VIP 用户的平均粉丝数，并可视化。</p>
+                <pre class="syntax-highlight language-javascript">
+function(fx, tweets) {
+  // 我们想显示男女用户的平均粉丝数(VIP单独计算)。
+  // 生成一个数组，每个元素表示用户的性别
+  var names = ["Male", "Female", "VIP", "unknown"];
+  var classes = ["m", "f", "v", "n"];
+  var get_class = function(tweet) {
+    if(tweet.verified) return "v";
+    if(tweet.gender == "m" || tweet.gender == "f") return tweet.gender;
+    return "n";
+  };
+  var data = classes;
+  var weights = classes.map(function(c) {
+    var c_tweets = tweets.filter(function(t) { return get_class(t) == c; });
+    if(c_tweets.length == 0) return 0;
+    return fx.mean(c_tweets, fx.$pick("followers_count"));
+  });
+  // 如有需要，可以打印调试信息。
+  fx.print("微博总数: " + tweets.length);
+  // 调用 draw 函数生成图表，多次调用可生成多个。
+  fx.chart({
+    title: "My Custom Chart",  // 标题
+    type: "bars",              // 类型，这里使用条形图
+    names: names,              // 每一条的显示名称
+    values: classes,           // 每一条的内部名称
+    data: data,                // 数据项
+    weights: weights           // 数据项的权重(可选参数，默认全1)
+  });
+}
+</pre>
+                <h2>详细文档</h2>
+                <p>我们在 <code>fx</code> 和 <code>tweets</code> 参数中提供您所需要的工具和数据。</p>
+                <h3>工具函数</h3>
+                <p><code>fx</code> 参数中包含很多实用的工具函数。</p>
+                <h4>fx.print</h4>
+                <p><code>fx.print(string/object)</code> 函数用于输出字符串或用 JSON 形式输出对象。</p>
+                <pre class="syntax-highlight language-javascript">
+fx.print("Hello World!");  // 输出 Hello World!
+fx.print({ a: 1, b: 2 });  // 输出 {"a":1,"b":2}
+</pre>
+                <h4>fx.draw</h4>
+                <p><code>fx.draw(info)</code> 函数用于输出图表。其中 info 是一个对象，包括图表所需要的信息。</p>
+                <h5>条形图</h5>
+                <pre class="syntax-highlight language-javascript">
+info = {
+  type: "bars",         // 图表类型: 条形图为 bars
+  title: "Title",       // 标题，可选
+  names: [ "name1", "name2", ... ],         // 每一条的名称
+  values: [ value1, value2, ... ],          // 每一条对应的数值或文本
+  data: [ data_value1, data_value2, ... ],  // 数据
+  weights: [ weight1, weight2, ... ]        // 权重，可选，默认全为 1
+}
+// 条形图的画法是: 将每一条对应的数据的权重求和，对应到每条的长度。
+</pre>
+                <h4>fx.min, fx.max, fx.mean, fx.sum, fx.std, fx.variance</h4>
+                <p>这些函数分别用于计算最小值、最大值、平均值、求和、标准差、方差。用法如下示例:</p>
+                <pre class="syntax-highlight language-javascript">
+// 普通数值数组
+var data = [ 1, 2, 3, 4, 5 ];
+var m = fx.mean(data); // m = 3
+var s = fx.max(data);  // m = 5
+
+// 对象数组，第二个参数传递函数对象，用于获取属性值
+var data = [ { a: 2, b: 4 }, { a: 1, b: 3 } ]
+var m = fx.max(data, function(d) { return d.a; });     // m = 2
+var m = fx.max(data, function(d) { return d.b * 2; }); // m = 8
+</pre>
+                <h3>微博元素属性</h3>
+                <p><code>tweets</code> 数组中包含每个微博的信息，每条微博是一个 Javascript 对象，这个对象和导出 CSV 时的微博对象大致相同，但有所区别，具体有如下属性:</p>
+
+                <table class="table table-striped">
+
+                    <thead>
+                    <tr>
+                        <th>属性名</th>
+                        <th>存储代码</th>
+                        <th>类型</th>
+                        <th>备注</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>用户id</td>
+                        <td>uid</td>
+                        <td>String</td>
+                        <td>用户id</td>
+                    </tr>
+                    <tr>
+                        <td>用户字符id</td>
+                        <td>idstr</td>
+                        <td>String</td>
+                        <td>用户字符id</td>
+                    </tr>
+                    <tr>
+                        <td>用户名称</td>
+                        <td>name</td>
+                        <td>String</td>
+                        <td>用户的名称</td>
+                    </tr>
+                    <tr>
+                        <td>用户省份</td>
+                        <td>province</td>
+                        <td>String</td>
+                        <td>用户所在省份</td>
+                    </tr>
+                    <tr>
+                        <td>城市</td>
+                        <td>city</td>
+                        <td>String</td>
+                        <td>用户所在城市</td>
+                    </tr>
+                    <tr>
+                        <td>位置信息</td>
+                        <td>location</td>
+                        <td>String</td>
+                        <td>用户所在位置信息</td>
+                    </tr>
+                    <tr>
+                        <td>自我介绍</td>
+                        <td>description</td>
+                        <td>String</td>
+                        <td>用户的自我介绍</td>
+                    </tr>
+                    <tr>
+                        <td>主页url</td>
+                        <td>url</td>
+                        <td>String</td>
+                        <td>用户的主页url</td>
+                    </tr>
+                    <tr>
+                        <td>头像地址</td>
+                        <td>profile_image_url</td>
+                        <td>String</td>
+                        <td>用户的头像地址</td>
+                    </tr>
+                    <tr>
+                        <td>手机封面地址</td>
+                        <td>cover_image_phone</td>
+                        <td>String</td>
+                        <td>用户的手机封面地址</td>
+                    </tr>
+                    <tr>
+                        <td>个人信息页</td>
+                        <td>profile_url</td>
+                        <td>String</td>
+                        <td>用户的个人信息页</td>
+                    </tr>
+                    <tr>
+                        <td>微号</td>
+                        <td>weihao</td>
+                        <td>String</td>
+                        <td>用户的微号</td>
+                    </tr>
+                    <tr>
+                        <td>性别</td>
+                        <td>gender</td>
+                        <td>int</td>
+                        <td>用户的性别</td>
+                    </tr>
+                    <tr>
+                        <td>关注人数</td>
+                        <td>followers_count</td>
+                        <td>int</td>
+                        <td>用户的关注人数</td>
+                    </tr>
+                    <tr>
+                        <td>朋友数</td>
+                        <td>friends_count</td>
+                        <td>int</td>
+                        <td>用户的朋友数</td>
+                    </tr>
+                    <tr>
+                        <td>一页展示朋友数</td>
+                        <td>pagefriends_count</td>
+                        <td>int</td>
+                        <td>用户的一页展示朋友数</td>
+                    </tr>
+                    <tr>
+                        <td>微博条数</td>
+                        <td>statuses_count</td>
+                        <td>int</td>
+                        <td>用户发布的微博条数</td>
+                    </tr>
+                    <tr>
+                        <td>收藏的微博数</td>
+                        <td>favourites_count</td>
+                        <td>Int</td>
+                        <td>用户的收藏的微博数</td>
+                    </tr>
+                    <tr>
+                        <td>创建时间</td>
+                        <td>created_at</td>
+                        <td>datetime</td>
+                        <td>创建用户的时间</td>
+                    </tr>
+                    <tr>
+                        <td>地理信息</td>
+                        <td>geo_enabled</td>
+                        <td>boolean</td>
+                        <td>用户地理信息</td>
+                    </tr>
+                    <tr>
+                        <td>是否验证</td>
+                        <td>verified</td>
+                        <td>boolean</td>
+                        <td>用户是否身份验证</td>
+                    </tr>
+                    <tr>
+                        <td>是否关注我</td>
+                        <td>follow_me</td>
+                        <td>boolean</td>
+                        <td>用户是否是否关注我</td>
+                    </tr>
+                    <tr>
+                        <td>在线状态</td>
+                        <td>online_status</td>
+                        <td>boolean</td>
+                        <td>用户的在线状态</td>
+                    </tr>
+                    <tr>
+                        <td>微博等级</td>
+                        <td>urank</td>
+                        <td>int</td>
+                        <td>用户的微博等级</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        </div>
+
+        <script type="text/javascript">
+            $('body').scrollspy({ target: '#navbar' })
+        </script>
+
+    </div>
+
+
+    <!-- Duoshuo Comment BEGIN -->
+    <!--
+      <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"weiboevents"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = 'http://static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    -->
+    <!-- Duoshuo Comment END -->
+
+    <hr />
+
+    <div class="row text-center">
+        <p>
+            <!--<a href="#" target="_blank"><img src="res/images/gdutuvis-logo.png"-->
+                                             <!--style="width: 100px"/></a>-->
+        </p>
+        <p><small>Copyright 2015-2018, GuangDong University of Technology, All rights reserved.</small></p>
+    </div>
+
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="res/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="res/js/bootstrap.min.js"></script>
+</body>
+</html>

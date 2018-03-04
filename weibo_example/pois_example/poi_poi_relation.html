@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>微博可视分析系列</title>
+
+    <!-- Bootstrap -->
+    <link href="../res/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+
+        body {
+            padding-top: 70px;
+        }
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index.html">Weibo Analysis </a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="../index.html">首页</a></li>
+                <li class=""><a href="../manual.html">教程</a></li>
+                <li class=""><a href="../publications.html">数据分析</a></li>
+
+                <li class=""><a href="../people.html">项目团队</a></li>
+                <li class=""><a href="../platform.html">Weibo Platform</a></li>
+                <li class=""><a href="../copyright.html">版权</a></li>
+                <!-- <li class=""><a href="intro/visearch">Visearch</a></li> -->
+                <!-- <li class=""><a href="intro/thememap">Thememap</a></li> -->
+                <!-- <li class=""><a href="intro/thememap2">Thememap2</a></li> -->
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-10" id = "main">
+
+        </div>
+
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked" id="1">
+                <li role="presentation"><button class="disabled btn">出度的最大的兴趣点</button></li>
+            </ul>
+
+            <ul class="nav nav-pills nav-stacked" id="2">
+                <li role="presentation"><button  class="disabled btn">入度的最大的兴趣点</button></li>
+            </ul>
+
+            <ul class="nav nav-pills nav-stacked" id="3">
+                <li role="presentation"><button  class="disabled btn">赌场相关的兴趣点</button></li>
+            </ul>
+
+        </div>
+    </div>
+    <hr/>
+
+    <div class="row text-center">
+        <p>
+            <a href="http://vis.pku.edu.cn/" target="_blank"><img src="images/pkuvis-logo.png"
+                                                                  style="width: 100px"/></a>
+        </p>
+        <p>
+            <small>Copyright 2015-2018, GuangDong University of Technology, All rights reserved.</small>
+        </p>
+    </div>
+
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="../res/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="../res/js/bootstrap.min.js"></script>
+
+
+<script src="../../build/jquery.min.js"></script>
+<!-- ECharts单文件引入 -->
+<script src="../../build/dist/echarts.js"></script>
+
+<!-- data 数据文件引入 -->
+<script src="../data/poi2poi.js"></script>
+
+<script type="text/javascript">
+
+    $('#main').css('height',screen.height);
+
+    selected = [true, false, false, false];
+    show(0, selected);
+
+    $(function () {
+        for(i in top_source_name){
+            $("#1").append('<li role="presentation"><a href="#" name="1' + i + '">' + top_source_name[i] +'</a></li>')
+        }
+        for(i in top_target_name){
+            $("#2").append('<li role="presentation"><a href="#" name="2' + i + '">' + top_target_name[i] +'</a></li>')
+        }
+        for(i in gambling_name){
+            $("#3").append('<li role="presentation"><a href="#" name="3' + i + '">' + gambling_name[i] +'</a></li>')
+        }
+
+        $("a").click(function () {
+            var num = parseInt($(this).attr('name'));
+
+            if(num / 10 < 2){
+                selected = [false, true, false, false];
+            }else if(num / 10 >= 3){
+                selected = [false, false, false, true];
+            }else{
+                selected = [false, false, true, false];
+            }
+            console.log(num / 10);
+            console.log(selected);
+            show(num % 10, selected);
+        })
+    });
+
+
+
+    function show(num, selected) {
+
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: '../../build/dist'
+        }
+    });
+
+    // 使用
+    require(
+        [
+            'echarts',
+            'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+            'echarts/chart/line', // 使用折线图就加载line模块，按需加载
+            'echarts/chart/scatter',
+            'echarts/chart/k',
+            'echarts/chart/pie',
+            'echarts/chart/radar',
+            'echarts/chart/force',
+            'echarts/chart/chord',
+            'echarts/chart/gauge',
+            'echarts/chart/funnel',
+            'echarts/chart/eventRiver',
+            'echarts/chart/venn',
+            'echarts/chart/treemap',
+            'echarts/chart/tree',
+            'echarts/chart/map',
+            'echarts/chart/wordCloud',
+            'echarts/chart/heatmap'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('main'));
+
+            // 自定义扩展图表类型：mapType = HK
+            require('echarts/util/mapData/params').params.macau = {
+                getGeoJson: function (callback) {
+//                        $.getJSON('../build/geoJson/HK_geo.json', callback);
+                    $.getJSON('../../build/geoJson/macau2.json', callback);
+                }
+            };
+
+//                var mapGeoData = require('echarts/util/mapData/params');
+//                console.log(mapGeoData);
+
+            option = {
+                backgroundColor: '#ffffff',
+                color: ['gold','aqua','lime'],
+                title : {
+                    text: '兴趣点迁徙',
+                    subtext:'数据采集于weibo by chen',
+                    x:'center',
+                    textStyle : {
+                        color: '#1e1e1e',
+                        fontSize: 30
+                    }
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: '{b}'
+                },
+                legend: {
+                    orient: 'vertical',
+                    x:'left',
+                    backgroundColor: '#ffffff',
+                    borderColor: 'rgba(178,34,34,0.8)',
+
+                    padding: 10,
+                    itemGap: 20,
+                    data:['全国', '出度的最大的兴趣点', '入度的最大的兴趣点', '赌场相关的兴趣点'],
+                    selectedMode: 'single',
+                    selected:{
+                        '全国': selected[0],
+                        '出度的最大的兴趣点' : selected[1],
+                        '入度的最大的兴趣点' : selected[2],
+                        '赌场相关的兴趣点' : selected[3]
+                    },
+                    textStyle : {
+                        color: 'red',
+                        fontSize: 18
+                    }
+                },
+                toolbox: {
+                    show : true,
+                    orient : 'vertical',
+                    x: 'right',
+                    y: 'center',
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                dataRange: {
+                    min : 0,
+                    max : 200,
+                    calculable : true,
+                    color: ['#ff2a23', 'orange', 'yellow','lime','aqua'],
+                    textStyle:{
+                        color:'#1e1e1e'
+                    }
+                },
+                series : [
+                    {
+                        name: '澳门',
+                        type: 'map',
+                        mapType: 'macau',
+                        roam: true,
+                        hoverable: false,
+                        itemStyle:{
+                            normal:{
+                                borderColor:'rgba(100,149,237,1)',
+                                borderWidth:0.5,
+                                areaStyle:{
+                                    color: '#1b1b1b'
+                                }
+                            }
+                        },
+                        data:[],
+                        markLine : {
+                            smooth:true,
+                            symbol: ['none', 'circle'],
+                            symbolSize : 1,
+                            itemStyle : {
+                                normal: {
+                                    color:'#fff',
+                                    borderWidth:1,
+                                    borderColor:'rgba(30,144,255,0.5)'
+                                }
+                            },
+                            data : data,
+                        },
+                        geoCoord: geo_data
+                    },
+
+                    {
+                        name: '出度的最大的兴趣点',
+                        type: 'map',
+                        mapType: 'macau',
+                        data:[],
+                        markLine : {
+                            smooth:true,
+                            effect : {
+                                show: true,
+                                scaleSize: 1,
+                                period: 30,
+                                color: '#fff',
+                                shadowBlur: 10
+                            },
+                            itemStyle : {
+                                normal: {
+                                    borderWidth:1,
+                                    lineStyle: {
+                                        type: 'solid',
+                                        shadowBlur: 10
+                                    }
+                                }
+                            },
+                            data : makeline_data_source_top[num]
+                        },
+                        markPoint : {
+                            symbol:'emptyCircle',
+                            symbolSize : function (v){
+                                return 10 + v/100
+                            },
+                            effect : {
+                                show: true,
+                                shadowBlur : 0
+                            },
+                            itemStyle:{
+                                normal:{
+                                    label:{show:false}
+                                },
+                                emphasis: {
+                                    label:{position:'top'}
+                                }
+                            },
+                            data : makepoint_data_source_top[num]
+                        }
+                    },
+                    {
+                        name: '入度的最大的兴趣点',
+                        type: 'map',
+                        mapType: 'macau',
+                        data:[],
+                        markLine : {
+                            smooth:true,
+                            effect : {
+                                show: true,
+                                scaleSize: 1,
+                                period: 30,
+                                color: '#fff',
+                                shadowBlur: 10
+                            },
+                            itemStyle : {
+                                normal: {
+                                    borderWidth:1,
+                                    lineStyle: {
+                                        type: 'solid',
+                                        shadowBlur: 10
+                                    }
+                                }
+                            },
+                            data : makeline_data_target_top[num]
+                        },
+                        markPoint : {
+                            symbol:'emptyCircle',
+                            symbolSize : function (v){
+                                return 10 + v/100
+                            },
+                            effect : {
+                                show: true,
+                                shadowBlur : 0
+                            },
+                            itemStyle:{
+                                normal:{
+                                    label:{show:false}
+                                },
+                                emphasis: {
+                                    label:{position:'top'}
+                                }
+                            },
+                            data : makepoint_data_target_top[num]
+                        }
+                    }
+                    ,
+                    {
+                        name: '赌场相关的兴趣点',
+                        type: 'map',
+                        mapType: 'macau',
+                        data:[],
+                        markLine : {
+                            smooth:true,
+                            effect : {
+                                show: true,
+                                scaleSize: 1,
+                                period: 30,
+                                color: '#fff',
+                                shadowBlur: 10
+                            },
+                            itemStyle : {
+                                normal: {
+                                    borderWidth:1,
+                                    lineStyle: {
+                                        type: 'solid',
+                                        shadowBlur: 10
+                                    }
+                                }
+                            },
+                            data : makeline_data_gambling_top[num]
+                        },
+                        markPoint : {
+                            symbol:'emptyCircle',
+                            symbolSize : function (v){
+                                return 10 + v/100
+                            },
+                            effect : {
+                                show: true,
+                                shadowBlur : 0
+                            },
+                            itemStyle:{
+                                normal:{
+                                    label:{show:false}
+                                },
+                                emphasis: {
+                                    label:{position:'top'}
+                                }
+                            },
+                            data : makepoint_data_gambling_top[num]
+                        }
+                    }
+                ]
+            };
+
+
+
+            // 为echarts对象加载数据
+            myChart.setOption(option);
+        }
+    );
+    };
+
+</script>
+
+</body>
+</html>

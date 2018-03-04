@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>微博可视分析系列</title>
+
+    <!-- Bootstrap -->
+    <link href="../res/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+
+        body {
+            padding-top: 70px;
+        }
+    </style>
+
+    <!-- HTML5 shim and ../res/pond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: ../res/pond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/../res/pond.js/1.4.2/../res/pond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index.html">Weibo Analysis </a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="../index.html">首页</a></li>
+                <li class=""><a href="../manual.html">教程</a></li>
+                <li class=""><a href="../publications.html">数据分析</a></li>
+
+                <li class=""><a href="../people.html">项目团队</a></li>
+                <li class=""><a href="../platform.html">Weibo Platform</a></li>
+                <li class=""><a href="../copyright.html">版权</a></li>
+                <!-- <li class=""><a href="intro/visearch">Visearch</a></li> -->
+                <!-- <li class=""><a href="intro/thememap">Thememap</a></li> -->
+                <!-- <li class=""><a href="intro/thememap2">Thememap2</a></li> -->
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="height:1000px"></div>
+
+        </div>
+
+    </div>
+    <hr/>
+
+    <div class="row text-center">
+        <p>
+
+
+        </p>
+        <p>
+            <small>Copyright 2015-2018, GuangDong University of Technology, All rights reserved.</small>
+        </p>
+    </div>
+
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="../res/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="../res/js/bootstrap.min.js"></script>
+
+
+<script src="../../build/jquery.min.js"></script>
+<!-- ECharts单文件引入 -->
+<script src="../../build/dist/echarts.js"></script>
+
+<!-- data 数据文件引入 -->
+<script src="../data/poisgeodata.js"></script>
+<script src="../data/pois_num.js"></script>
+
+<script type="text/javascript">
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: '../../build/dist'
+        }
+    });
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+                'echarts/chart/line', // 使用折线图就加载line模块，按需加载
+                'echarts/chart/scatter',
+                'echarts/chart/k',
+                'echarts/chart/pie',
+                'echarts/chart/radar',
+                'echarts/chart/force',
+                'echarts/chart/chord',
+                'echarts/chart/gauge',
+                'echarts/chart/funnel',
+                'echarts/chart/eventRiver',
+                'echarts/chart/venn',
+                'echarts/chart/treemap',
+                'echarts/chart/tree',
+                'echarts/chart/map',
+                'echarts/chart/wordCloud',
+                'echarts/chart/heatmap'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('main'));
+
+                // 自定义扩展图表类型：mapType = HK
+                require('echarts/util/mapData/params').params.macau = {
+                    getGeoJson: function (callback) {
+//                        $.getJSON('../build/geoJson/HK_geo.json', callback);
+                        $.getJSON('../../build/geoJson/macau2.json', callback);
+                    }
+                };
+
+//                var mapGeoData = require('echarts/util/mapData/params');
+//                console.log(mapGeoData);
+
+                var option = {
+                    title: {
+                        text: '澳门的pois 分布',
+                        textStyle: {
+                            fontSize: 30
+                        }
+//                        sublink: 'http://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF%E8%A1%8C%E6%94%BF%E5%8D%80%E5%8A%83#cite_note-12'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}<br/>{c} (个)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 'right',
+                        'data': ['density', 'checkin_user_num', 'checkin_num', 'photo_num'],
+                        'selected': {
+                            'density': true,
+                            'checkin_user_num': false,
+                            'checkin_num': false,
+                            'photo_num': false
+                        },
+                        textStyle: {
+                            fontSize: 20
+                        }
+                    },
+                    toolbox: {
+                        show: true,
+                        orient: 'vertical',
+                        x: 'right',
+                        y: 'center',
+                        feature: {
+                            mark: {show: true},
+                            dataView: {show: true, readOnly: false},
+                            restore: {show: true},
+                            saveAsImage: {show: true}
+                        }
+                    },
+                    dataRange: {
+                        min: 800,
+                        max: 50000,
+                        text: ['High', 'Low'],
+                        realtime: false,
+                        calculable: true,
+                        color: ['orangered', 'yellow', 'blue']
+                    },
+                    series: [
+                        {
+                            name: 'density',
+                            type: 'map',
+                            mapType: 'macau',
+                            hoverable: false,
+                            roam: true,
+                            data: [],
+                            markPoint: {
+                                symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: '#87cefa',
+                                        borderWidth: 1,            // 标注边线线宽，单位px，默认为1
+                                        label: {
+                                            show: false
+                                        }
+                                    },
+                                    emphasis: {
+                                        borderColor: '#1e90ff',
+                                        borderWidth: 5,
+                                        label: {
+                                            show: false
+                                        }
+                                    }
+                                },
+
+                                data: pois_geoCoord_data // pois_geoCoord_data // test_geoCoord_data
+                            },
+                            geoCoord: pois_geoCoord // pois_geoCoord // test_geoCoord
+                        },
+                        {
+                            name: 'checkin_user_num',
+                            type: 'map',
+                            mapType: 'macau',
+                            hoverable: false,
+                            roam: true,
+                            data: [],
+                            markPoint: {
+                                symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: '#87cefa',
+                                        borderWidth: 1,            // 标注边线线宽，单位px，默认为1
+                                        label: {
+                                            show: false
+                                        }
+                                    },
+                                    emphasis: {
+                                        borderColor: '#1e90ff',
+                                        borderWidth: 5,
+                                        label: {
+                                            show: false
+                                        }
+                                    }
+                                },
+
+                                data: pois_checkin_user_num_data.slice(0, 100) // pois_geoCoord_data // test_geoCoord_data
+                            },
+                            geoCoord: pois_checkin_user_num_geo // pois_geoCoord // test_geoCoord
+                        },
+                        {
+                            name: 'checkin_num',
+                            type: 'map',
+                            mapType: 'macau',
+                            hoverable: false,
+                            roam: true,
+                            data: [],
+                            markPoint: {
+                                symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: '#87cefa',
+                                        borderWidth: 1,            // 标注边线线宽，单位px，默认为1
+                                        label: {
+                                            show: false
+                                        }
+                                    },
+                                    emphasis: {
+                                        borderColor: '#1e90ff',
+                                        borderWidth: 5,
+                                        label: {
+                                            show: false
+                                        }
+                                    }
+                                },
+
+                                data: pois_checkin_num_data.slice(0, 100) // pois_geoCoord_data // test_geoCoord_data
+                            },
+                            geoCoord: pois_checkin_num_geo // pois_geoCoord // test_geoCoord
+                        },
+                        {
+                            name: 'photo_num',
+                            type: 'map',
+                            mapType: 'macau',
+                            hoverable: false,
+                            roam: true,
+                            data: [],
+                            markPoint: {
+                                symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: '#87cefa',
+                                        borderWidth: 1,            // 标注边线线宽，单位px，默认为1
+                                        label: {
+                                            show: false
+                                        }
+                                    },
+                                    emphasis: {
+                                        borderColor: '#1e90ff',
+                                        borderWidth: 5,
+                                        label: {
+                                            show: false
+                                        }
+                                    }
+                                },
+
+                                data: pois_photo_num_data.slice(0, 20) // pois_geoCoord_data // test_geoCoord_data
+                            },
+                            geoCoord: pois_photo_num_geo // pois_geoCoord // test_geoCoord
+                        },
+                    ]
+//                    series: [
+//                        {
+//                            name: 'macau',
+//                            type: 'map',
+//                            mapType: 'macau', // 自定义扩展图表类型
+//                            itemStyle: {
+//                                normal: {label: {show: true}},
+//                                emphasis: {label: {show: true}}
+//                            },
+//                            data: pois_geoCoord_data,
+//
+//                            // 文本位置修正
+//                            textFixed: {
+//                                'Yau Tsim Mong': [-10, 0]
+//                            },
+//                            // 文本直接经纬度定位
+//                            geoCoord: pois_geoCoord
+//                        }
+//                    ]
+                };
+
+
+                // 为echarts对象加载数据 
+                myChart.setOption(option);
+            }
+    );
+
+</script>
+</body>
+
+
+
